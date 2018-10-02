@@ -14,6 +14,13 @@ def genModel(NUM_PATHS,NUM_PERIODS, s = 0):
 
     for T in np.arange(0.25,NUM_PATHS/2+0.001,0.25):
         for t in np.arange(0,T+0.001,0.25):
-            bondPrices["%.2f_%.2f" % (t, T)] = 1 #CHANGE
+            tStr = "%.2f_%.2f" % (t, T)
+            if(t == T):
+                bondPrices[tStr] = 1
+            elif(t == 0):
+                bondPrices[tStr] = np.exp(-1 * param.loc[t,"Zero_YTM"] * t)
+            else:
+
+
 
     YTM = pd.DataFrame()
