@@ -3,19 +3,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from ir_param import *
 
+#Modeling Parameters
 NUM_PATHS = 1000
 NUM_PERIODS = 7
-
 dt = 0.25
 err = 0.001
 
-def colStr(t,T):
-    return "%.2f_%.2f" % (t, T)
-
-t = 0
-T = 0.5
-
-def genModel(a,phi):
+def genModel(a = 1,phi = 0.05):
     param = getParam(a,phi)
 
     factor_1 = pd.DataFrame(np.random.normal(size=(NUM_PATHS,NUM_PERIODS+1)))
@@ -26,32 +20,29 @@ def genModel(a,phi):
     #factor_2 = pd.DataFrame([[0,1.8266,  0.1911,  0.1370,  0.1764,  0.2251,  0.7992,  -1.2849]])
     factor_2.columns = param.index
 
-    bondPrices = pd.DataFrame(index=range(NUM_PATHS))
-    YTM = pd.DataFrame(index=range(NUM_PATHS))
+    bondPrices = pd.DataFrame(index=range(NUM_PATHS),
+                    columns=pd.MultiIndex(levels=[[],[]],labels=[[],[]],names=["t","T"]))
+
+    YTM = pd.DataFrame(index=range(NUM_PATHS),
+                    columns=pd.MultiIndex(levels=[[],[]],labels=[[],[]],names=["t","T"]))
 
     for T in np.arange(dt,NUM_PERIODS*dt+err,dt):
         for t in np.arange(0,T+err,dt):
-            curStr = colStr(t,T)
-            prevStr = colStr(t-dt, T)
-            print(curStr)
-
             if(t == T):
-                bondPrices[curStr] = 1
+                bondPrices[(t,T)] = 1
             elif(t == 0):
-                bondPrices[curStr] = np.exp(-1 * param.loc[(T-0.25),"Zero_YTM"] * T)
+                bondPrices[(t,T)] = np.exp(-1 * param.loc[(T-0.25),"Zero_YTM"] * T)
             else:
-                bondPrices[curStr] = bondPrices[prevStr]*(
+                bondPrices[(t,T)] = bondPrices[(t-dt,T)]*(
                         1+YTM[t-dt]*dt +
-                        param.loc[dt:T,"s1"].sum()*dt*np.sqrt(dt) * factor_1.loc[:,t] +
+                        param.loc[dt:T-dt,"s1"].sum()*dt*np.sqrt(dt) * factor_1.loc[:,t] +
                         param.loc[dt:T-dt,"s2"].sum()*dt*np.sqrt(dt) * factor_2.loc[:,t] )
 
             if(t == T-dt):
-                YTM[t] = -np.log(bondPrices[curStr])
+                YTM[t] = -np.log(bondPrices[(t,T)])
 
     return(bondPrices,YTM)
 
-(bondPrices,YTM) = genModel(NUM_PATHS,NUM_PERIODS)
-
-plt.plot(YTM.transpose(),color="green")
-plt.plot(YTM.mean(axis=0),linewidth=4,color="blue")
+#(bondPrices,YTM) = genModel(1,0.05)
+plt.plot(YTM.transpose().values)
 plt.show()
