@@ -33,13 +33,13 @@ def get_payoff(r1, r3):
 p = get_payoff(r1,r3)
 
 def get_discount(YTM):
-	discount = pd.DataFrame(0, index = YTM.index.get_values(), columns = YTM.columns.get_values())
+	col = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]
+	discount = pd.DataFrame(0, index = YTM.index.get_values(), columns = col)
 	periods = YTM.shape[1]
 
 	for i in range(periods):
 		s = YTM.iloc[:,:i+1].sum(1)
 		discount.iloc[:,i] = s.apply(lambda x: math.exp(-x*.25))
-
 	return discount
 
 d = get_discount(YTM)
