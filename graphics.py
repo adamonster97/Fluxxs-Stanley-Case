@@ -9,6 +9,6 @@ def plot(df):
 
 if __name__ == "__main__":
     from ir_model import *
-    (bondPrices,YTM) = genModel(0.01,0.5)
+    (bondPrices, YTM) = genModel(0.01,0.5)
     plot(YTM)
 
