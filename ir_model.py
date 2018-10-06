@@ -3,12 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from ir_param import *
 
-#Modeling Parameters
-NUM_PATHS = 1000
-NUM_PERIODS = 7
-dt = 0.25
-err = 0.001
-
 def genModel(a = 1,phi = 0.05):
     param = getParam(a,phi)
 

@@ -1,6 +1,12 @@
 import pandas as pd
 import numpy as np
 
+#Modeling Parameters
+NUM_PATHS = 1000
+NUM_PERIODS = 7
+dt = 0.25
+err = 0.001
+
 def s1(a,phi):
     return phi * a
 
