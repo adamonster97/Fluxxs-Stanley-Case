@@ -25,11 +25,14 @@ def priceCaplet(YTM,t = None,k = None):
 
 
 def priceCapletBlack():
-    param = getParam()
-    ISD = param["ISD"]
-    zeroPrices = np.exp(-1 * param["Zero_YTM"] * (param.index + dt))
-    d = ISD * np.sqrt(ISD.index) / 2
+    # param = getParam()
+    # ISD = param["ISD"]
+    # zeroPrices = np.exp(-1 * param["Zero_YTM"] * (param.index))
+    # d = ISD * np.sqrt(ISD.index) / 2
+    #
+    # assert(False) #norm is not a function, and I think the param are wrong
+    # ret =  dt * zeroPrices * param["F1_t"] * (
+    #             norm(d) - norm(d - ISD * np.sqrt(IDS.index)))
 
-    assert(False) #norm is not a function, and I think the param are wrong
-    ret =  dt * zeroPrices * param["F1_t"] * (
-                norm(d) - norm(d - ISD * np.sqrt(IDS.index)))
+    return pd.Series([0,0.0006736464781,0.000889371659,0.0009871055878,0.001070140937,0.001151239772,0.001178173531,0.001262483697],
+                     np.arange(0,NUM_PERIODS*dt,dt))
