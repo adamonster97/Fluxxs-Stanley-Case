@@ -34,9 +34,6 @@ def genModel(a = 1,phi = 0.05):
 
             if(t == T-dt):
                 YTM[t] = -np.log(bondPrices[(t,T)])
-
     return(bondPrices,YTM)
 
 #(bondPrices,YTM) = genModel(1,0.05)
-plt.plot(YTM.transpose().values)
-plt.show()
