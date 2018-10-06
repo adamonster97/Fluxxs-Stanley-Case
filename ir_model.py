@@ -3,12 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from ir_param import *
 
-#Modeling Parameters
-NUM_PATHS = 1000
-NUM_PERIODS = 7
-dt = 0.25
-err = 0.001
-
 def genModel(a = 1,phi = 0.05):
     param = getParam(a,phi)
 
@@ -40,9 +34,11 @@ def genModel(a = 1,phi = 0.05):
 
             if(t == T-dt):
                 YTM[t] = -np.log(bondPrices[(t,T)])
-
     return(bondPrices,YTM)
 
 #(bondPrices,YTM) = genModel(1,0.05)
+<<<<<<< HEAD
 # plt.plot(YTM.transpose().values)
 # plt.show()
+=======
+>>>>>>> CreatingCalibration
