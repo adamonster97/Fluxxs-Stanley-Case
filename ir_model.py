@@ -25,17 +25,18 @@ def genModel(a = 1,phi = 0.05):
             if(t == T):
                 bondPrices[(t,T)] = 1
             elif(t == 0):
-                bondPrices[(t,T)] = np.exp(-1 * param.loc[(T-0.25),"Zero_YTM"] * T)
+                bondPrices[(t,T)] = np.exp(-1 * param.loc[T,"Zero_YTM"] * T)
             else:
                 bondPrices[(t,T)] = bondPrices[(t-dt,T)]*(
                         1+YTM[t-dt]*dt +
                         param.loc[dt:T-dt,"s1"].sum()*dt*np.sqrt(dt) * factor_1.loc[:,t] +
-                        param.loc[dt:T-dt,"s2"].sum()*dt*np.sqrt(dt) * factor_2.loc[:,t] )
+                        param.loc[dt:(T-t),"s2"].sum()*dt*np.sqrt(dt) * factor_2.loc[:,t] )
 
             if(t == T-dt):
                 YTM[t] = -np.log(bondPrices[(t,T)])
     return(bondPrices,YTM)
 
-#(bondPrices,YTM) = genModel(1,0.05)
+if __name__ == "__main__":
+    (bondPrices,YTM) = genModel(1,0.05)
 # plt.plot(YTM.transpose().values)
 # plt.show()
