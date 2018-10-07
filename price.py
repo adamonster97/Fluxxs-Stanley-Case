@@ -25,14 +25,10 @@ def priceCaplet(YTM,t = None,k = None):
 
 
 def priceCapletBlack():
-<<<<<<< HEAD
     param = getParam()
-    ISD = param["ISD"]
     zeroPrices = np.exp(-1 * param["Zero_YTM"] * (param.index))
-    d = ISD * np.sqrt(ISD.index) / 2
-=======
->>>>>>> CreatingCalibration
-
-    assert(False) #norm is not a function, and I think the param are wrong
-    ret =  dt * zeroPrices * param["F1_t"] * (
-                norm(d) - norm(d - ISD * np.sqrt(IDS.index)))
+    d1 = param["ISD"] * np.sqrt(param.index)/2
+    d2 = d1 - param["ISD"] * np.sqrt(param.index)
+    return dt * zeroPrices.shift(-1) * (
+        param["F1_t"] * stats.norm.cdf(d1) -
+        param["F1_t"] * stats.norm.cdf(d2))
