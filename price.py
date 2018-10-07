@@ -17,12 +17,13 @@ def priceCaplet(YTM,t = None,k = None):
         #Do I need to copy YTM?
         pay = YTM.subtract(k,level="t").copy()
         pay[pay < 0] = 0
-        discount = np.exp(-1 * YTM * dt).expanding(axis=1).mean()
+        discount = np.exp(-1 * YTM * dt).expanding(axis=1).prod()
         return (pay * discount).mean(axis = 0)
     else:
-        r = YTM.loc[:,t]
-        r[r < k] = 0
-        return r.mean()
+        pay = YTM.loc[:,t] - k
+        discount = np.exp(-1 * YTM.loc[:,:t] * dt).prod()
+        pay[pay < 0] = 0
+        return pay.mean(axis = 0)
 
 
 def priceCapletBlack():
