@@ -11,7 +11,7 @@ def s1(a,phi):
     return phi * a
 
 def s2(a, phi):
-    return a * (np.exp(-2 * (a.index - 0.25)) - 0.5)
+    return a * (np.exp(-2 * (np.arange(0,NUM_PERIODS*dt+err,dt) - 0.25)) - 0.5)
 
 def getParam(a = 1,phi = 0.05):
     param = pd.DataFrame(
