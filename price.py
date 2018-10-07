@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import scipy.stats as stats
 from ir_param import *
 
 #YTM = genModel(1,0.05)[1]
