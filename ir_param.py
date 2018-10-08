@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 #Modeling Parameters
-NUM_PATHS = 1000
+NUM_PATHS = 100000
 NUM_PERIODS = 8
 dt = 0.25
 err = 0.001
