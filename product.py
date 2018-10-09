@@ -41,7 +41,7 @@ def get_payoff(r1, r3, rise_ki, flat_ki):
 	# payoff = pd.DataFrame(0, index = r1.index.get_values(), columns = knockin_level)
 	# payoff.iloc[:,j] = (np.subtract(l3, l1.iloc[:,j])).apply(lambda x: max(0, x))
 
-	return (payoff)
+	return (payoff, l1,l3)
 
 def get_discount(YTM):
 	col = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]
@@ -56,13 +56,13 @@ def get_discount(YTM):
 def price_option(payoff, discount):
 	discount_fac = discount.iloc[:,3]
 
-	price = payoff * discount_fac
+	price = payoff.multiply(discount_fac)
 
-	return price.mean()
+	return price
 
 def productPriceAll(bondPrc,YTM,rise_ki,flat_ki):
 	(r1, r3) = get_fut_spot(bondPrc)
-	p = get_payoff(r1,r3,rise_ki,flat_ki)
+	(p,l1,l3) = get_payoff(r1,r3,rise_ki,flat_ki)
 	d = get_discount(YTM)
 	opt_price = price_option(p, d)
 	return opt_price

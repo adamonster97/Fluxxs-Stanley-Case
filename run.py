@@ -6,6 +6,8 @@ from ir_calib import *
 from correlation_calc import *
 from price import *
 from product import *
+from hedge import *
+from greeks import *
 
 def summary(bondPrice, duration, spread):
 
@@ -39,16 +41,19 @@ def rates_sum(bondPrices):
   return (r3_sum, r1_sum, spread_sum)
 
 if __name__ == "__main__":
-
+  param = getParam()
   # Calibrate Model
   phi0 = 0.005
   curAs = calibrate(phi0=phi0, a0=1)
+  curAs.to_pickle("calib.pkl")
+  # curAs = pd.read_pickle("calib.pkl")
   (bondPrices, YTM) = genModel(list(curAs.values), phi0)
 
   # Check Correlation
-  corr = get_3mon_1yr_corr(bondPrices)
-  print("Correlation: %0.8f" % corr)
-  
+  # corr = get_3mon_1yr_corr(bondPrices)
+  # print("Correlation: %0.8f" % corr)
+
+
   NOTIONAL = 10000000
   cur_3m = .052
   cur_1y = .0572
@@ -56,14 +61,20 @@ if __name__ == "__main__":
 
   rise_ki = 0.00
   flat_ki = 0.0026
-  payoffs = get_payoff(r1,r3, rise_ki, flat_ki)
+  # (payoffs, l1, l3) = get_payoff(r1,r3, rise_ki, flat_ki)
+  #
+  # price = payoffs.mean()*np.exp(-cur_1y)*NOTIONAL
+  # print("Price: %0.10f" % price)
+  #
+  # max_payoff = max(payoffs)
+  # max_price = max_payoff*np.exp(-cur_1y)*NOTIONAL
+  # print('Bull PV: %.10f' % max_price)
 
-  price = payoffs.mean()*np.exp(-cur_1y)*NOTIONAL
-  print("Price: %0.10f" % price)
-
-  max_payoff = max(payoffs)
-  max_price = max_payoff*np.exp(-cur_1y)*NOTIONAL
-  print('Bull PV: %.10f' % max_price)
+  Vega(bondPrices,0,0.0026).mean()*1e6
+  Delta(bondPrices,0,0.0026).mean()*1e6
+  #
+  VegaCovered(bondPrices,0,0.0026).mean() * 1e6
+  DeltaCovered(bondPrices,0,0.0026,0.0001).mean() * 1e6
 
   # from mpl_toolkits.mplot3d import Axes3D
   # fig, ax = plt.subplots(nrows = 1, ncols = 1)
@@ -86,6 +97,20 @@ if __name__ == "__main__":
   # plt.ylabel('Premium (USD on \$1M Notional)')
   # plt.show()
 
+  # (r3_sum, r1_sum, spread_sum) = rates_sum(bondPrices)
+  # payout = VaR(bondPrices,rise_ki,flat_ki)
 
 
-  (r3_sum, r1_sum, spread_sum) = rates_sum(bondPrices)
+
+unhedged = VaR(bondPrices,rise_ki,flat_ki) * 1e6
+hedged = VaRHedged(bondPrices,rise_ki,flat_ki) * 1e6
+plt.hist(unhedged[unhedged < 0],50,color="green")
+plt.hist(hedged[hedged < 0],50,color="orange")
+plt.show()
+
+plt.hist(hedged,50,color="orange")
+plt.hist(unhedged,50,color="green")
+plt.show()
+
+
+hedged.quantile([0.05,0.5,0.95])

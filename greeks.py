@@ -2,8 +2,7 @@ import pandas as pd
 import numpy as np
 from ir_model import *
 from product import *
-
-(bondPrc, YTM) = genModel(0.2,0.05)
+from hedge import *
 
 """
 Calculate the Greeks
@@ -25,13 +24,57 @@ def perterbDelta(bondPrc,p = 0.0001):
     return yieldToPrice(priceToYield(bondPrc) + p)
 
 def Vega(bondPrc,rise_ki,flat_ki,p = 0.01):
-    productPriceAll(bondPrc,priceToYTM(bondPrc),)
+    oldP = productPriceAll(bondPrc,priceToYTM(bondPrc),rise_ki,flat_ki)
     newPrc = perterbVega(bondPrc, p)
     newYTM = priceToYTM(newPrc)
-    productPriceAll(newPrc,newYTM,rise_ki,flat_ki)
+    newP = productPriceAll(newPrc,newYTM,rise_ki,flat_ki)
+    return oldP - newP
 
 def Delta(bondPrc,rise_ki,flat_ki,p = 0.0001):
-    productPriceAll(bondPrc,priceToYTM(bondPrc),)
+    oldP = productPriceAll(bondPrc,priceToYTM(bondPrc),rise_ki,flat_ki)
     newPrc = perterbDelta(bondPrc, p)
     newYTM = priceToYTM(newPrc)
-    productPriceAll(newPrc,newYTM,rise_ki,flat_ki)
+    newP = productPriceAll(newPrc,newYTM,rise_ki,flat_ki)
+    return oldP-newP
+
+def VegaCovered(bondPrc,rise_ki,flat_ki,p = 0.01):
+    prodPriceOld = productPriceAll(bondPrc,priceToYTM(bondPrc),rise_ki,flat_ki)
+    hedgePriceOld = hedgeAll(bondPrc,rise_ki,flat_ki)
+
+    newPrc = perterbVega(bondPrc, p)
+    newYTM = priceToYTM(newPrc)
+
+    prodPriceNew = productPriceAll(newPrc,priceToYTM(newPrc),rise_ki,flat_ki)
+    hedgePriceNew = hedgeAll(newPrc,rise_ki,flat_ki)
+
+    priceChange = (hedgePriceOld - prodPriceOld) - (hedgePriceNew - prodPriceNew)
+    return priceChange
+
+def DeltaCovered(bondPrc,rise_ki,flat_ki,p = 0.0001):
+    prodPriceOld = productPriceAll(bondPrc,priceToYTM(bondPrc),rise_ki,flat_ki)
+    hedgePriceOld = hedgeAll(bondPrc,rise_ki,flat_ki)
+
+    newPrc = perterbDelta(bondPrc, p)
+    newYTM = priceToYTM(newPrc)
+
+    prodPriceNew = productPriceAll(newPrc,priceToYTM(newPrc),rise_ki,flat_ki)
+    hedgePriceNew = hedgeAll(newPrc,rise_ki,flat_ki)
+
+    priceChange = (hedgePriceOld - prodPriceOld) - (hedgePriceNew - prodPriceNew)
+    return priceChange
+
+
+def VaRHedged(bondPrc,rise_ki,flat_ki):
+    prodPayout = productPriceAll(bondPrc,priceToYTM(bondPrc),rise_ki,flat_ki)
+    hedgePayout = hedgeAll(bondPrc,rise_ki,flat_ki)/10
+
+    payout = hedgePayout - prodPayout  + 1742 * 1e-6 - hedgePayout.mean()
+
+    return payout
+
+
+def VaR(bondPrc,rise_ki,flat_ki):
+    prodPayout = productPriceAll(bondPrc,priceToYTM(bondPrc),rise_ki,flat_ki)
+    payout = 1742 * 1e-6 - prodPayout
+
+    return payout
