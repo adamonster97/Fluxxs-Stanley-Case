@@ -1,32 +1,13 @@
 import pandas as pd
 import numpy as np
 from ir_model import *
+from product import *
 
-# (bondPrc, YTM) = genModel(0.2,0.05)
+(bondPrc, YTM) = genModel(0.2,0.05)
 
 """
 Calculate the Greeks
 """
-
-def priceToYield(bondPrc):
-    ret = pd.DataFrame(index = bondPrc.index, columns = bondPrc.columns)
-    for ((t,T),curP) in bondPrc.iteritems():
-        if (t == T):
-            ret[(t,T)] = 0
-        else:
-            ret[(t,T)] = -np.log(curP) / (T-t)
-
-    return ret
-
-def yieldToPrice(yields):
-    ret = pd.DataFrame(index = yields.index, columns = yields.columns)
-    for ((t,T),curY) in yields.iteritems():
-        if (t == T):
-            ret[(t,T)] = 1
-        else:
-            ret[(t,T)] = np.exp(-1 * curY * (T-t))
-
-    return ret
 
 def perterbVega(bondPrc,p = 0.01):
     ret = pd.DataFrame(index = bondPrc.index, columns = bondPrc.columns)
@@ -40,6 +21,17 @@ def perterbVega(bondPrc,p = 0.01):
 
     return yieldToPrice(ret)
 
-
-def delta(bondPrc,p = 0.0001):
+def perterbDelta(bondPrc,p = 0.0001):
     return yieldToPrice(priceToYield(bondPrc) + p)
+
+def Vega(bondPrc,rise_ki,flat_ki,p = 0.01):
+    productPriceAll(bondPrc,priceToYTM(bondPrc),)
+    newPrc = perterbVega(bondPrc, p)
+    newYTM = priceToYTM(newPrc)
+    productPriceAll(newPrc,newYTM,rise_ki,flat_ki)
+
+def Delta(bondPrc,rise_ki,flat_ki,p = 0.0001):
+    productPriceAll(bondPrc,priceToYTM(bondPrc),)
+    newPrc = perterbDelta(bondPrc, p)
+    newYTM = priceToYTM(newPrc)
+    productPriceAll(newPrc,newYTM,rise_ki,flat_ki)

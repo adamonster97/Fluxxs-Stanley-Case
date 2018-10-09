@@ -57,7 +57,7 @@ if __name__ == "__main__":
   rise_ki = 0.00
   flat_ki = 0.0026
   payoffs = get_payoff(r1,r3, rise_ki, flat_ki)
-  
+
   price = payoffs.mean()*np.exp(-cur_1y)*NOTIONAL
   print("Price: %0.10f" % price)
 
@@ -70,7 +70,7 @@ if __name__ == "__main__":
 
   # xs = np.arange(0,0.004,0.0001)
   # #ys = np.arange(0,0.05,0.001)
-  
+
   # xvals = list()
   # yvals = list()
 

@@ -40,4 +40,27 @@ def genModel(a = 1,phi = 0.05):
 
     return(bondPrices,YTM)
 
+def priceToYield(bondPrc):
+    ret = pd.DataFrame(index = bondPrc.index, columns = bondPrc.columns)
+    for ((t,T),curP) in bondPrc.iteritems():
+        if (t == T):
+            ret[(t,T)] = 0
+        else:
+            ret[(t,T)] = -np.log(curP) / (T-t)
+
+    return ret
+
+def yieldToPrice(yields):
+    ret = pd.DataFrame(index = yields.index, columns = yields.columns)
+    for ((t,T),curY) in yields.iteritems():
+        if (t == T):
+            ret[(t,T)] = 1
+        else:
+            ret[(t,T)] = np.exp(-1 * curY * (T-t))
+
+    return ret
+
+def priceToYTM(bondPrc):
+    return priceToYield(bondPrc)[[(0.0,0.25),(0.25,0.5),(0.5,0.75),(0.75,1.0),(1.0,1.25),(1.25,1.5),(1.5,1.75),(1.75,2.0)]]
+
 #(bondPrices,YTM) = genModel(1,0.05)

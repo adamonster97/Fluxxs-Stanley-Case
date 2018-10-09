@@ -5,13 +5,14 @@ from ir_model import *
 
 # (bondPrc, YTM) = genModel()
 
+NOTIONAL = 1000000
 cur_3m = .052
 cur_1y = .0572
 
 # spot 1y from now
 def get_fut_spot(bondPrc):
-	p1 = bondPrc[(1,2)]
-	p3 = bondPrc[(1,1.25)]
+	p1 = bondPrc[(1.0,2.0)]
+	p3 = bondPrc[(1.0,1.25)]
 
 	r1 = p1.apply(lambda x: -math.log(x))
 	r3 = p3.apply(lambda x: -math.log(x)/.25)
@@ -59,15 +60,9 @@ def price_option(payoff, discount):
 
 	return price.mean()
 
-
-if __name__ == "__main__":
-	NOTIONAL = 1000000
-	cur_3m = .052
-	cur_1y = .0572
-	(bondPrc, YTM) = genModel()
+def productPriceAll(bondPrc,YTM,rise_ki,flat_ki):
 	(r1, r3) = get_fut_spot(bondPrc)
-	(p, l3, l1) = get_payoff(r1,r3)
+	p = get_payoff(r1,r3,rise_ki,flat_ki)
 	d = get_discount(YTM)
 	opt_price = price_option(p, d)
-
-
+	return opt_price
