@@ -14,8 +14,8 @@ def get_three_mon_changes(bondPrices):
   period = 0.25
   c1 = get_spots(bondPrices[(0.25, 0.5)],period) - get_spots(bondPrices[(0, 0.25)], period)
   c2 = get_spots(bondPrices[(0.5, 0.75)],period) - get_spots(bondPrices[(0.25, 0.5)], period)
-  c3 = get_spots(bondPrices[(0.75, 1)],period) - get_spots(bondPrices[(0.5, 0.75)], period)
-  c4 = get_spots(bondPrices[(1, 1.25)],period) - get_spots(bondPrices[(0.75, 1)], period)
+  c3 = get_spots(bondPrices[(0.75, 1.0)],period) - get_spots(bondPrices[(0.5, 0.75)], period)
+  c4 = get_spots(bondPrices[(1.0, 1.25)],period) - get_spots(bondPrices[(0.75, 1.0)], period)
   return pd.concat([c1, c2, c3, c4], axis = 1)
 
 # Calculate absolute changes in 1yr forward spot rates
