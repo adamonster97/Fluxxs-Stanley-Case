@@ -32,11 +32,11 @@ def genModel(a = 1,phi = 0.05):
             else:
                 bondPrices[(t,T)] = bondPrices[(t-dt,T)]*(
                         1+YTM[t-dt]*dt +
-                        param.loc[t,"s1"]*dt*np.sqrt(dt) * factor_1.loc[:,t] +
-                        param.loc[t,"s2"]*dt*np.sqrt(dt) * factor_2.loc[:,t] )
+                        param.loc[dt:(T-t+0.001),"s1"].sum()*dt*np.sqrt(dt) * factor_1.loc[:,t] +
+                        param.loc[dt:(T-t+0.001),"s2"].sum()*dt*np.sqrt(dt) * factor_2.loc[:,t] )
 
-            if(t == T-dt):
-                YTM[t] = -np.log(bondPrices[(t,T)])
+            if(t == (T-dt)):
+                YTM[t] = -4*np.log(bondPrices[(t,T)])
 
     return(bondPrices,YTM)
 

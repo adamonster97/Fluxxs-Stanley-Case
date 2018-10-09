@@ -3,9 +3,7 @@ import math
 import numpy as np
 from ir_model import *
 
-(bondPrc, YTM) = genModel()
-
-NOTIONAL = 1000000
+# (bondPrc, YTM) = genModel()
 
 cur_3m = .052
 cur_1y = .0572
@@ -20,31 +18,29 @@ def get_fut_spot(bondPrc):
 
 	return (r1, r3)
 
-(r1, r3) = get_fut_spot(bondPrc)
 
-def get_payoff(r1, r3):
+def get_payoff(r1, r3, rise_ki, flat_ki):
 	delta_1y = r1 - cur_1y
 	delta_3m = r3 - cur_3m
 
-	knockin_level = [0, .1]
+	l1 = delta_1y.apply(lambda x: max(x, 0))
+	l3 = delta_3m.apply(lambda x: max(x, 0))
 
-	l1 = pd.DataFrame(0, index = r1.index.get_values(), columns = knockin_level)
+	payoff = (l3 - l1).apply(lambda x: max(x, 0))
 
-	l3 = delta_3m
+	# Rise KNOCK-IN
+	k = delta_1y.apply(lambda x: x > rise_ki)
+	payoff = k * payoff
 
-	for i in range(len(knockin_level)):
-		k = delta_1y.apply(lambda x: x > knockin_level[i])
-		l1.iloc[:,i] = k * delta_1y
+	# Flatten KNOCK-IN
+	new_spread = r1 - r3
+	k = new_spread.apply(lambda x: x < flat_ki)
+	payoff = k * payoff
 
-	payoff = pd.DataFrame(0, index = r1.index.get_values(), columns = knockin_level)
+	# payoff = pd.DataFrame(0, index = r1.index.get_values(), columns = knockin_level)
+	# payoff.iloc[:,j] = (np.subtract(l3, l1.iloc[:,j])).apply(lambda x: max(0, x))
 
-	for j in range(len(knockin_level)):
-		payoff.iloc[:,j] = (np.subtract(l3, l1.iloc[:,j])).apply(lambda x: max(0, x))
-
-
-	return (payoff, l3 * NOTIONAL, l1 * NOTIONAL)
-
-(p, l3, l1) = get_payoff(r1,r3)
+	return (payoff)
 
 def get_discount(YTM):
 	col = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]
@@ -56,8 +52,6 @@ def get_discount(YTM):
 		discount.iloc[:,i] = s.apply(lambda x: math.exp(-x*.25))
 	return discount
 
-d = get_discount(YTM)
-
 def price_option(payoff, discount):
 	discount_fac = discount.iloc[:,3]
 
@@ -65,6 +59,15 @@ def price_option(payoff, discount):
 
 	return price.mean()
 
-opt_price = price_option(p, d)
+
+if __name__ == "__main__":
+	NOTIONAL = 1000000
+	cur_3m = .052
+	cur_1y = .0572
+	(bondPrc, YTM) = genModel()
+	(r1, r3) = get_fut_spot(bondPrc)
+	(p, l3, l1) = get_payoff(r1,r3)
+	d = get_discount(YTM)
+	opt_price = price_option(p, d)
 
 

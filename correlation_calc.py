@@ -36,8 +36,8 @@ def get_spots(bond_prices, period):
 # Returns mean correlation between all paths (rows) of two dfs
 def get_correlation(df1, df2):
   # Calculate correlation between each path
-  corrs = [df1.iloc[x,:].corr(df2.iloc[x,:]) for x in range(0, len(df1))]
-  return np.mean(corrs)
+  #corrs = [df1.iloc[x,:].corr(df2.iloc[x,:]) for x in range(0, len(df1))]
+  return df1.unstack().corr(df2.unstack())
 
 # Returns the mean correlation between the quarterly changes in 
 # the 1yr and 3mon rates
@@ -48,7 +48,7 @@ def get_3mon_1yr_corr(bondPrices):
 
 
 if __name__ == "__main__":
-  (bondPrices,YTM) = genModel(1,0.05)
+  (bondPrices,YTM) = genModel(1,0)
   corr = get_3mon_1yr_corr(bondPrices)
   print("Correlation: %0.4f" % corr)
 

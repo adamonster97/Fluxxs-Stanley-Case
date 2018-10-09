@@ -21,7 +21,7 @@ def price_hedge(r1, r3, discount):
 	total_payoff1 = payoff_3m * hedge_ratio1 + payoff_1y
 	total_payoff2 = payoff_3m * hedge_ratio2 + payoff_1y
 
-	price = pd.DataFrame(0, index = )
+	price = pd.DataFrame(0, index = r1.index.get_values(), columns = ['knockin1','knockin2'])
 
 	price1 = total_payoff1 * discount_fac
 	price2 = total_payoff2 * discount_fac

@@ -2,11 +2,12 @@ import pandas as pd
 import numpy as np
 import scipy.optimize as opt
 from ir_model import *
+from correlation_calc import *
 from price import *
 
-phi0 = 1
-a0 = 0.2
-t = 0.25
+# phi0 = 1
+# a0 = 0.2
+# t = 0.25
 
 def calibrate(phi0 = 0.05, a0 = 0.2):
     param = getParam()
@@ -30,7 +31,7 @@ def calibrate(phi0 = 0.05, a0 = 0.2):
 
         tol = 1e-08
         i = 0
-        N = 25
+        N = 50
 
         a = 0
         fa = f(a)
@@ -45,7 +46,7 @@ def calibrate(phi0 = 0.05, a0 = 0.2):
 
         while i < N:
             if abs(fp) < tol:
-                print("C")
+                #print("C")
                 continue # (p,fp)
             if fp > 0:
                 b = p
@@ -62,8 +63,15 @@ def calibrate(phi0 = 0.05, a0 = 0.2):
     return finA
 
 if __name__ == "__main__":
-    A1 = calibrate(phi0 = 0.1, a0 = 1)
-    A2 = calibrate(phi0 = 0.2, a0 = 1)
-    A3 = calibrate(phi0 = 0.5, a0 = 1)
-    A4 = calibrate(phi0 = 1, a0 = 1)
-    A5 = calibrate(phi0 = 2, a0 = 1)
+
+  phi0 = 0.005
+  curAs = calibrate(phi0=phi0, a0=1)
+
+  print("Phi: %0.2f" % phi0)
+  (bondPrices, YTM) = genModel(list(curAs.values), phi0)
+  corr = get_3mon_1yr_corr(bondPrices)
+  print("Correlation: %0.8f" % corr)
+  print("---------------------")
+
+  #from graphics import *
+  #plot(YTM)
