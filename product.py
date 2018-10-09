@@ -10,6 +10,7 @@ NOTIONAL = 1000000
 cur_3m = .052
 cur_1y = .0572
 
+# spot 1y from now
 def get_fut_spot(bondPrc):
 	p1 = bondPrc[(1,2)]
 	p3 = bondPrc[(1,1.25)]
@@ -29,7 +30,7 @@ def get_payoff(r1, r3):
 
 	l1 = pd.DataFrame(0, index = r1.index.get_values(), columns = knockin_level)
 
-	l3 = delta_3m.apply(lambda x: max(0, x))
+	l3 = delta_3m
 
 	for i in range(len(knockin_level)):
 		k = delta_1y.apply(lambda x: x > knockin_level[i])
